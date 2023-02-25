@@ -34,6 +34,6 @@ jobs:
           script: |
             mkdir -p test_db_backups
             sudo scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-            echo Transfer file to Test server“>> log_file.txt
+            echo "Transfer file to Test server“>> log_file.txt
             cp test_db_backups/production_db_dump.sql test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "remote copy created for logging on test_db_backups">> log_file.txt
