@@ -36,6 +36,3 @@ jobs:
             echo Transfer file to Test server“>> log_file.txt
             cp ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}/production_db_dump.sql ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "remote copy created for logging on ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}">> log_file.txt
-            
-	          
-            
