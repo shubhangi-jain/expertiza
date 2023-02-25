@@ -32,7 +32,12 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.TARGET_KEY }} #private key
           script : |
-            mkdir -p test
+            mkdir -p /home/sjain29/test_db_backups
+            scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/test_db_backups
+            cp /home/sjain29/test_db_backups/production_db_dump.sql /home/sjain29/test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
+            echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
+            
+            
       
 #       - name: ssh on production server
 #         uses: appleboy/ssh-action@master
@@ -47,15 +52,15 @@ jobs:
 #             cp test_db_backups/production_db_dump.sql test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
 #             echo "remote copy created for logging on test_db_backups">> log_file.txt
             
-      - name: Set up SSH keys
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: |
-            ${{ secrets.SOURCE_KEY }}
-            ${{ secrets.TARGET_KEY }}
-          run: |
-            mkdir -p /home/sjain29/test_db_backups
-            scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/test_db_backups
-            echo "Transfer file to Test server“>> /home/sjain29/log_file.txt
-            cp /home/sjain29/test_db_backups/production_db_dump.sql /home/sjain29/test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
-            echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
+#       - name: Set up SSH keys
+#         uses: webfactory/ssh-agent@v0.7.0
+#         with:
+#           ssh-private-key: |
+#             ${{ secrets.SOURCE_KEY }}
+#             ${{ secrets.TARGET_KEY }}
+#           run: |
+#             mkdir -p /home/sjain29/test_db_backups
+#             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/test_db_backups
+#             echo "Transfer file to Test server“>> /home/sjain29/log_file.txt
+#             cp /home/sjain29/test_db_backups/production_db_dump.sql /home/sjain29/test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
+#             echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
