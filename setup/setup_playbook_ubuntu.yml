@@ -72,7 +72,7 @@
     # Expertiza clone repo, install gems
     - name: Clone Expertiza repository
       ansible.builtin.git:
-        repo: https://github.com/mundra-ankur/expertiza.git
+        repo: https://github.com/shubhangij12/test-expertiza
         dest: "{{ app_root }}"
         clone: yes
         update: no
