@@ -27,6 +27,6 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: setup/setup_playbook_ubuntu.yml
-          key: ${{ secrets.TARGET_KEY }}
-          inventory: node ansible_host=${{ secrets.TARGET_HOST }} ansible_user=${{ secrets.SOURCE_USER }}
+          key: ${{ secrets.SOURCE_KEY }}
+          inventory: node ansible_host=${{ secrets.SOURCE_HOST }} ansible_user=${{ secrets.SOURCE_USER }}
           options: --verbose
