@@ -17,7 +17,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SOURCE_HOST }} #ip address of production
-          username: ${{ secrets.SOURCE_USERNAME }} #expertiza 
+          username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.SOURCE_KEY }} #private key
           script : |
             mysqldump -u root --password="${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
