@@ -44,7 +44,7 @@ jobs:
           ssh-private-key: |
             ${{ secrets.SOURCE_KEY }}
             ${{ secrets.TARGET_KEY }}
-          script: |
+          run: |
             mkdir -p /home/sjain29/test_db_backups
             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/test_db_backups
             echo "Transfer file to Test server“>> /home/sjain29/log_file.txt
