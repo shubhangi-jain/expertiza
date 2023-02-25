@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SOURCE_USERNAME }} #expertiza 
           key: ${{ secrets.SOURCE_KEY }} #private key
           script : |
-            mysqldump -u root --password="${{ secrets.MYSQL_ROOT_PASSWORD }}" "${{ variables.SYNC_MYSQL_SOURCE_DB }}" > production_db_dump.sql
+            mysqldump -u root --password="${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ variables.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             echo "backup complete to production_db_dump.sql" >> log_file.txt
             mkdir -p db_backups
             cp production_db_dump.sql db_backups/db_dump_production_$(date -d "today" +"%Y%m%d%H%M").sql
