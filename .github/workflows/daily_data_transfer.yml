@@ -34,7 +34,6 @@ jobs:
           script : |
             mkdir -p /home/sjain29/test_db_backups
             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/test_db_backups
-            cp /home/sjain29/test_db_backups/production_db_dump.sql /home/sjain29/test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
             
             
