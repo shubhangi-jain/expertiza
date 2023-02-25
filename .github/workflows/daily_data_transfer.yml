@@ -43,7 +43,7 @@ jobs:
           script : |
             mkdir -p /home/sjain29/test_db_backups
             touch /tmp/source_key_file.txt
-            echo $SOURCE_KEY > /tmp/source_key_file.txt
+            echo "$SOURCE_KEY" > /tmp/source_key_file.txt
             scp -i /tmp/source_key_file.txt ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql /home/sjain29/test_db_backups
             echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
             
