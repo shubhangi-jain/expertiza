@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.SOURCE_KEY }} #private key
           script : |
-            ls
+            sudo mysqldump -u root -p ${{ secrets.MYSQL_ROOT_PASSWORD }} ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v3
