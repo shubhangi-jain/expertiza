@@ -40,6 +40,7 @@ jobs:
           host: ${{ secrets.TARGET_HOST }} #ip address of production
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.TARGET_KEY }} #private key
+          passphrase: ""
           envs: SOURCE_KEY
           script : |
             mkdir -p /home/sjain29/test_db_backups
