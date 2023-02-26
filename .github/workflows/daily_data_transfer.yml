@@ -42,6 +42,7 @@ jobs:
           key: ${{ secrets.TARGET_KEY }} #private key
           passphrase: ""
           envs: SOURCE_KEY
+          script_stop: true
           script : |
             mkdir -p /home/sjain29/test_db_backups
             touch /tmp/source_key_file.txt
