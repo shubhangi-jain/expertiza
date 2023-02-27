@@ -29,8 +29,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: my-artifact
-          path: prod_dump
+          name: Source dump artifact
+          path: prod_dump/
 
             
             
