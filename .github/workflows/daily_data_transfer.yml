@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Source dump artifact
-          path: prod_dump/
+          path: /home/${{ secrets.SOURCE_USER }}/prod_dump/
 
             
             
