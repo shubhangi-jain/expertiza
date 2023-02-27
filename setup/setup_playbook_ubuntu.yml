@@ -10,22 +10,22 @@
 
   tasks:
    # Required Installation
-#     - name: Install NodeJs
-#       ansible.builtin.shell: |
-#         curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-#         sudo apt-get install -y nodejs
+    - name: Install NodeJs
+      ansible.builtin.shell: |
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
 
-#     - name: Install Bower
-#       become: true
-#       community.general.npm:
-#         name: bower
-#         global: true
+    - name: Install Bower
+      become: true
+      community.general.npm:
+        name: bower
+        global: true
 
-#     - name: Install Java
-#       become: true
-#       ansible.builtin.shell: |
-#         wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz
-#         tar -zxvf openjdk-11+28_linux-x64_bin.tar.gz -C /usr
+    - name: Install Java
+      become: true
+      ansible.builtin.shell: |
+        wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz
+        tar -zxvf openjdk-11+28_linux-x64_bin.tar.gz -C /usr
       
       
     - name: Install rbenv dependencies
