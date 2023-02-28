@@ -33,16 +33,26 @@ jobs:
           key: ${{ secrets.TARGET_KEY }} #private key
           script : |
             mkdir -p test_db_backups
+            touch /tmp/target_key_file.txt
+            echo "$TARGET_KEY" > /tmp/target_key_file
             
-      - name: Set up SSH keys
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: |
-            ${{ secrets.SOURCE_KEY }}
-            ${{ secrets.TARGET_KEY }}
-          run: |
-            scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-            echo "Transfer file to Test server“>> log_file.txt
+
+      - name: Copy file using SCP
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
+        run: |
+          scp production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
+          
+          
+#       - name: Set up SSH keys
+#         uses: webfactory/ssh-agent@v0.7.0
+#         with:
+#           ssh-private-key: |
+#             ${{ secrets.SOURCE_KEY }}
+#             ${{ secrets.TARGET_KEY }}
+#           run: |
+#             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
+#             echo "Transfer file to Test server“>> log_file.txt
           
           
        
