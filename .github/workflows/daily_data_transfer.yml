@@ -32,7 +32,7 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.TARGET_KEY }} #private key
           script : |
-            mkdir -p db_backups
+            mkdir -p test_db_backups
             
       - name: Set up SSH keys
         uses: webfactory/ssh-agent@v0.7.0
