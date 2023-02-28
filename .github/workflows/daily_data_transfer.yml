@@ -33,8 +33,7 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.SOURCE_KEY }} #private key
           source: /home/sjain29/production_db_dump.sql
-          #target: /home/runner/work/shubhangij12test-expertiza/test-expertiza/example.txt
-          target: ${{ github.workspace }}/production_db_dump.sql
+          target: ${{ github.workspace }}
           
       - name: Trying 
         run: ls ${{ github.workspace }}
