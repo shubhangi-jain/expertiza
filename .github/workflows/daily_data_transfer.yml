@@ -32,8 +32,8 @@ jobs:
           host: ${{ secrets.SOURCE_HOST }} #ip address of production
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.SOURCE_KEY }} #private key
-          source: /home/sjain29/production_db_dump.sql
-          target: ${{ github.workspace }}/production_db_dump.sql
+          source: "/home/sjain29/production_db_dump.sql"
+          target: "${{ github.workspace }}/production_db_dump.sql"
           
       - name: Add remote servers host key to known_hosts file
         run: |
