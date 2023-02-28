@@ -58,6 +58,15 @@ jobs:
           username: ${{ secrets.SOURCE_USER }}
           key: ${{ secrets.TARGET_KEY }}
           
+          
+      - name: Copy Target key to runner
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.TARGET_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TARGET_KEY }}
       
       - name: drop database if it does not exist
         run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
