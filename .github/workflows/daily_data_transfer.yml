@@ -41,7 +41,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
         run: |
-          scp production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
+          scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
           
           
 #       - name: Set up SSH keys
