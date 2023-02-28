@@ -35,25 +35,18 @@ jobs:
 #           source: "${{ github.workspace }}/production_db_dump.sql"
 #           target: "/home/sjain29/production_db_dump.sql"
           
-      - name: Add remote servers host key to known_hosts file
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+#       - name: Add remote servers host key to known_hosts file
+#         run: |
+#           mkdir -p ~/.ssh
+#           ssh-keyscan ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
+#           chmod 644 ~/.ssh/known_hosts
           
 #       - name: Copy file to checked out repository
 #         run: sudo scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
 #         env:
 #           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
 
-#       - name: Copy to github workspace
-#         uses: appleboy/scp-action@master
-#         with:
-#           host: ${{ secrets.SOURCE_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.SOURCE_KEY }} #private key
-#           source: "${{ github.workspace }}/"
-#           target: "/home/sjain29/"
+
           
       - name: Copy SSH key to runner
         run: |
@@ -71,14 +64,23 @@ jobs:
         run: ls 
         working-directory: ${{ github.workspace }}
         
-      - name: Copy file to destination server
-        uses: appleboy/ssh-action@master
+      - name: Copy to github workspace
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.TARGET_HOST }} #ip address of production
           username: ${{ secrets.SOURCE_USER }} #expertiza 
-          key: ${{ secrets.TARGET_KEY }} #p
-          script: |
-            scp ${{ github.workspace }}/production_db_dump.sql `${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}`:/home/sjain29/production_db_dump.sql
+          key: ${{ secrets.TARGET_KEY }} #
+          source: "production_db_dump.sql"
+          target: "/home/sjain29/"
+        
+#       - name: Copy file to destination server
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: ${{ secrets.TARGET_HOST }} #ip address of production
+#           username: ${{ secrets.SOURCE_USER }} #expertiza 
+#           key: ${{ secrets.TARGET_KEY }} #p
+#           script: |
+#             scp ${{ github.workspace }}/production_db_dump.sql `${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}`:/home/sjain29/production_db_dump.sql
             
             
 
