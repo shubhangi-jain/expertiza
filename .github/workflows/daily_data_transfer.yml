@@ -26,14 +26,20 @@ jobs:
             echo "backup copied to db_backup">> log_file.txt
             
             
-      - name: Copy to github workspace
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SOURCE_HOST }} #ip address of production
-          username: ${{ secrets.SOURCE_USER }} #expertiza 
-          key: ${{ secrets.SOURCE_KEY }} #private key
-          source: /home/sjain29/production_db_dump.sql
-          target: ${{ github.workspace }}
+#       - name: Copy to github workspace
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: ${{ secrets.SOURCE_HOST }} #ip address of production
+#           username: ${{ secrets.SOURCE_USER }} #expertiza 
+#           key: ${{ secrets.SOURCE_KEY }} #private key
+#           source: /home/sjain29/production_db_dump.sql
+#           target: ${{ github.workspace }}
+          
+          
+      - name: Copy file to checked out repository
+        run: scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
           
       - name: Trying 
         run: ls ${{ github.workspace }}
@@ -48,6 +54,8 @@ jobs:
             scp ${{ github.workspace }}/production_db_dump.sql `${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}`:/home/sjain29/production_db_dump.sql
             
             
+
+          
 #       - name: Upload artifact
 #         uses: actions/upload-artifact@v2
 #         with:
