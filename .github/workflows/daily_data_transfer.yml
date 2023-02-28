@@ -50,6 +50,7 @@ jobs:
           
       - name: Copy SSH key to runner
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
