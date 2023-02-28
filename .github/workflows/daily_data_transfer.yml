@@ -40,9 +40,6 @@ jobs:
       - name: Copy file using SCP
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
-          SOURCEHOST: ${{ secrets.SOURCE_HOST }}
-          SOURCEUSER: ${{ secrets.SOURCE_USER }}
-          TARGETHOST: ${{ secrets.TARGET_HOST }}
         run: |
           scp production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
           
