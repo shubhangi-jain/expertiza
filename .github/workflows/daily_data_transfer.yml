@@ -42,7 +42,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           
       - name: Copy file to checked out repository
-        run: scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
+        run: sudo scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
           
