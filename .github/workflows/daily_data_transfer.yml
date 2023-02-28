@@ -60,7 +60,7 @@ jobs:
           
       
       - name: drop database if it does not exist
-        run: ssh ${{ secrets.SOURCE_USER }}@$${{ secrets.TARGET_HOST }} "mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
    
 #             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
 #             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
