@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} #expertiza 
           key: ${{ secrets.TARGET_KEY }} #p
           script: |
-            scp ${{ github.workspace }}/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/home/sjain29/production_db_dump.sql
+            scp ${{ github.workspace }}/production_db_dump.sql `${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}`:/home/sjain29/production_db_dump.sql
             
             
 #       - name: Upload artifact
