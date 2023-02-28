@@ -35,6 +35,11 @@ jobs:
 #           source: /home/sjain29/production_db_dump.sql
 #           target: ${{ github.workspace }}
           
+      - name: Add remote servers host key to known_hosts file
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
           
       - name: Copy file to checked out repository
         run: scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
