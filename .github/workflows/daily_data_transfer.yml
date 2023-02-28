@@ -26,14 +26,14 @@ jobs:
             echo "backup copied to db_backup">> log_file.txt
             
             
-      - name: Copy to github workspace
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SOURCE_HOST }} #ip address of production
-          username: ${{ secrets.SOURCE_USER }} #expertiza 
-          key: ${{ secrets.SOURCE_KEY }} #private key
-          source: "/home/sjain29/production_db_dump.sql"
-          target: "${{ github.workspace }}/production_db_dump.sql"
+#       - name: Copy to github workspace
+#         uses: appleboy/scp-action@master
+#         with:
+#           host: ${{ secrets.SOURCE_HOST }} #ip address of production
+#           username: ${{ secrets.SOURCE_USER }} #expertiza 
+#           key: ${{ secrets.SOURCE_KEY }} #private key
+#           source: "${{ github.workspace }}/production_db_dump.sql"
+#           target: "/home/sjain29/production_db_dump.sql"
           
       - name: Add remote servers host key to known_hosts file
         run: |
@@ -45,6 +45,15 @@ jobs:
 #         run: sudo scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
 #         env:
 #           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
+
+      - name: Copy to github workspace
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SOURCE_HOST }} #ip address of production
+          username: ${{ secrets.SOURCE_USER }} #expertiza 
+          key: ${{ secrets.SOURCE_KEY }} #private key
+          source: "${{ github.workspace }}/README.md"
+          target: "/home/sjain29/"
           
       - name: Trying 
         run: ls 
