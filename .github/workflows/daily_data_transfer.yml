@@ -73,6 +73,17 @@ jobs:
           key: ${{ secrets.TARGET_KEY }} #
           source: "production_db_dump.sql"
           target: "/home/sjain29/"
+          
+      - name: Restore database on destination server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TARGET_HOST }}
+          username: ${{ secrets.SOURCE_USER }}#sjain29
+          key: ${{ secrets.TARGET_KEY }}
+          script: |
+            sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
+            sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
+            sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < production_db_dump.sql
         
 #       - name: Copy file to destination server
 #         uses: appleboy/ssh-action@master
