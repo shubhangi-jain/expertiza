@@ -75,7 +75,7 @@ jobs:
         run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       - name: import table on target database
-        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < production_db_dump.sql"
+        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/sjain29/production_db_dump.sql"
    
 #             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
 #             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
