@@ -6,26 +6,26 @@ on:
     - cron: '0 0 * * *' # run daily at midnight
 
 jobs:
-  backup_copy_restore_and_log:
+  data_transfer:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        #trying to login to the production remote server 
-      - name: create dump on production server
+        
+      - name: Create dump on production server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SOURCE_HOST }} #ip address of production
-          username: ${{ secrets.SOURCE_USER }} #expertiza 
-          key: ${{ secrets.SOURCE_KEY }} #private key
+          host: ${{ secrets.SOURCE_HOST }} 
+          username: ${{ secrets.SOURCE_USER }} 
+          key: ${{ secrets.SOURCE_KEY }}
           script : |
             sudo mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             mkdir -p db_backups
-            cp production_db_dump.sql db_backups/db_dump_production_$(date -d "today" +"%Y%m%d%H%M").sql
+            cp production_db_dump.sql db_backups/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "backup copied to db_backup">> log_file.txt
                     
-      - name: Copy SSH key to runner
+      - name: Copy Source key to runner
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
@@ -34,20 +34,16 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
 
-      - name: Copy files from remote server
+      - name: Copy file from production server to github workspace
         run: |
           scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql $GITHUB_WORKSPACE
-          
-      - name: Trying 
-        run: ls 
-        working-directory: ${{ github.workspace }}
         
       - name: Copy to github workspace
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.TARGET_HOST }} #ip address of production
-          username: ${{ secrets.SOURCE_USER }} #expertiza 
-          key: ${{ secrets.TARGET_KEY }} #
+          host: ${{ secrets.TARGET_HOST }} 
+          username: ${{ secrets.SOURCE_USER }}
+          key: ${{ secrets.TARGET_KEY }} 
           source: "production_db_dump.sql"
           target: "/home/sjain29/"
           
@@ -57,7 +53,10 @@ jobs:
           host: ${{ secrets.TARGET_HOST }}
           username: ${{ secrets.SOURCE_USER }}
           key: ${{ secrets.TARGET_KEY }}
-          
+          script: |
+            mkdir -p db_backups
+            cp production_db_dump.sql db_backups/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
+        
           
       - name: Copy Target key to runner
         run: |
@@ -68,143 +67,11 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.TARGET_KEY }}
       
-      - name: drop database if it does not exist
+      - name: Drop database if it does not exist
         run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
-      - name: create database on target server
+      - name: Create database on target server
         run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
-      - name: import table on target database
+      - name: Import table on target database
         run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/sjain29/production_db_dump.sql"
-   
-#             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
-#             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" -e "CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}"
-#             sudo mysql -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < production_db_dump.sql
-            
-            
-                        
-#       - name: Copy to github workspace
-#         uses: appleboy/scp-action@master
-#         with:
-#           host: ${{ secrets.SOURCE_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.SOURCE_KEY }} #private key
-#           source: "${{ github.workspace }}/production_db_dump.sql"
-#           target: "/home/sjain29/production_db_dump.sql"
-          
-#       - name: Add remote servers host key to known_hosts file
-#         run: |
-#           mkdir -p ~/.ssh
-#           ssh-keyscan ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
-#           chmod 644 ~/.ssh/known_hosts
-          
-#       - name: Copy file to checked out repository
-#         run: sudo scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql ${{ github.workspace }}
-#         env:
-#           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
-        
-#       - name: Copy file to destination server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.TARGET_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.TARGET_KEY }} #p
-#           script: |
-#             scp ${{ github.workspace }}/production_db_dump.sql `${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}`:/home/sjain29/production_db_dump.sql
-            
-            
-
-          
-#       - name: Upload artifact
-#         uses: actions/upload-artifact@v2
-#         with:
-#            name: Source dump artifact
-#            path: /home/${{ secrets.SOURCE_USER }}/prod_dump/
-
- 
-#       - name: connect to testing server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.TARGET_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.TARGET_KEY }} #private key
-#           script : |
-#             mkdir -p test_db_backups
-#             touch /tmp/target_key_file.txt
-#             echo "$TARGET_KEY" > /tmp/target_key_file
-            
-
-#       - name: Copy file using SCP
-#         env:
-#           SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
-#         run: |
-#           scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-          
-          
-#       - name: Set up SSH keys
-#         uses: webfactory/ssh-agent@v0.7.0
-#         with:
-#           ssh-private-key: |
-#             ${{ secrets.SOURCE_KEY }}
-#             ${{ secrets.TARGET_KEY }}
-#           run: |
-#             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-#             echo "Transfer file to Test server“>> log_file.txt
-          
-          
-       
-#       
-            
-            
-#       - name: Transfer files between source and target servers
-#         uses: srt32/scp-action@v2.1
-#         with:
-# #           source: './local-file.txt'
-# #           target: '/remote/directory'
-#           ssh_private_key: ${{ secrets.SOURCE_KEY }}
-#           ssh_private_key_2: ${{ secrets.TARGET_KEY }}
-#           hosts: |
-#             ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}
-#             ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}
-#           script : |
-#             mkdir -p /home/sjain29/test_db_backups
-#             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-#             echo "Transfer file to Test server“>> log_file.txt
-          
-
-#       - name: copy dump to test server
-#         uses: appleboy/ssh-action@master
-#         env:
-#           SOURCE_KEY: ${{ secrets.SOURCE_KEY }}
-#         with:
-#           host: ${{ secrets.TARGET_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.TARGET_KEY }} #private key
-#           passphrase: ""
-#           envs: SOURCE_KEY
-#           script_stop: true
-#           script : |
-#             mkdir -p /home/sjain29/test_db_backups
-#             touch /tmp/source_key_file.txt
-#             echo "$SOURCE_KEY" > /tmp/source_key_file
-#             scp -i /tmp/source_key_file ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql /home/sjain29/test_db_backups
-#             echo "remote copy created for logging on test_db_backups">>/home/sjain29/log_file.txt
-            
-
-          
-        
-          
-#       - name: ssh on production server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.TARGET_HOST }} #ip address of production
-#           username: ${{ secrets.SOURCE_USER }} #expertiza 
-#           key: ${{ secrets.TARGET_KEY }} #private key
-#           script : |
-#             mkdir -p test_db_backups
-#             scp ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/production_db_dump.sql ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }}:/test_db_backups
-#             echo "Transfer file to Test server“>> log_file.txt
-#             cp test_db_backups/production_db_dump.sql test_db_backups/db_dump_test_$(date -d "today" +"%Y%m%d%H%M").sql
-#             echo "remote copy created for logging on test_db_backups">> log_file.txt
-            
-      
