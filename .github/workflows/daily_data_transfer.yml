@@ -21,9 +21,9 @@ jobs:
           key: ${{ secrets.SOURCE_KEY }}
           script : |
             sudo mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
-            mkdir -p db_backups
-            cp production_db_dump.sql db_backups/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
-            echo "backup copied to db_backup">> log_file.txt
+            mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
+            cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
+            echo "backup copied to ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}">> log_file.txt
                     
       - name: Copy Source key to runner
         run: |
@@ -54,8 +54,8 @@ jobs:
           username: ${{ secrets.SOURCE_USER }}
           key: ${{ secrets.TARGET_KEY }}
           script: |
-            mkdir -p db_backups
-            cp production_db_dump.sql db_backups/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
+            mkdir -p ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}
+            cp production_db_dump.sql ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
         
           
       - name: Copy Target key to runner
