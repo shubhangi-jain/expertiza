@@ -47,7 +47,7 @@ jobs:
 
       - name: Copy file from production server to github workspace
         run: |
-          scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/sjain29/production_db_dump.sql $GITHUB_WORKSPACE
+          scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
       - name: Copy to github workspace
         uses: appleboy/scp-action@master
