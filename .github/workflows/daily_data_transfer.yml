@@ -10,8 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: create wireguard tunnel to deploy Expertiza on private network
+        run: |
+          sudo apt install wireguard
+          echo "${{ secrets.WIREGUARD_PRIVATE_KEY }}" > privatekey
+          sudo ip link add wg0 type wireguard
+          sudo ip address add 10.0.0.2/24 dev wg0
+          sudo wg set wg0 private-key privatekey
+          sudo ip link set wg0 up
+          sudo wg set wg0 peer ${{ secrets.WIREGUARD_SERVER_PUBLIC_KEY }} allowed-ips 10.0.0.1/32 endpoint 152.14.92.215:50000
+          ping -c 4 10.0.0.1
+          
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Create dump on production server
         uses: appleboy/ssh-action@master
@@ -20,7 +31,7 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} 
           key: ${{ secrets.SOURCE_KEY }}
           script : |
-            sudo mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
+            mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
             cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "backup copied to ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}">> log_file.txt
