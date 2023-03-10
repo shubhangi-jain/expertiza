@@ -53,7 +53,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.TARGET_HOST }} 
-          username: ${{ secrets.SOURCE_USER }}
+          username: ${{ secrets.USER }}
           key: ${{ secrets.TARGET_KEY }} 
           source: "production_db_dump.sql"
           target: "/home/sjain29/"
@@ -62,7 +62,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.TARGET_HOST }}
-          username: ${{ secrets.SOURCE_USER }}
+          username: ${{ secrets.USER }}
           key: ${{ secrets.TARGET_KEY }}
           script: |
             mkdir -p ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}
@@ -79,10 +79,10 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.TARGET_KEY }}
       
       - name: Drop database if it does not exist
-        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       - name: Create database on target server
-        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       - name: Import table on target database
-        run: ssh ${{ secrets.SOURCE_USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/sjain29/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/sjain29/production_db_dump.sql"
