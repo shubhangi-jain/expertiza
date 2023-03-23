@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.TARGET_KEY }} 
           source: "production_db_dump.sql"
-          target: "/home/sjain29/"
+          target: "/home/expertiza/"
         
         #This step uses appleboy/ssh-action@master to login to the target server 
         #Run cp command to take backup of the production_db_dump.sql in the backup location
@@ -103,4 +103,4 @@ jobs:
       
       #Import the production_db_dump.sql in the database on the target server 
       - name: Import table on target database
-        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/sjain29/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
