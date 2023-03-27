@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         server:
-          - TEST_SERVER
-          - DEVELOPMENT_SERVER
+          - 'TEST_SERVER'
+          - 'DEVELOPMENT_SERVER'
     steps:
         #Create a VPN to access the production server from your system
       - name: create wireguard tunnel to backup data on a private network
