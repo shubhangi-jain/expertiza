@@ -105,12 +105,12 @@ jobs:
       
       #Drop the existing database on target server
       - name: Drop database if it exists
-        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }}"sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       #Create a database on the target server 
       - name: Create database on ${{ matrix.server }} server
-        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }}"sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       #Import the production_db_dump.sql in the database on the target server 
       - name: Import table on ${{ matrix.server }} database
-        run: ssh ${{ secrets.USER }}@$${{ secrets[matrix.target_host] }}"sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@$${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
