@@ -113,4 +113,4 @@ jobs:
       
       #Import the production_db_dump.sql in the database on the target server 
       - name: Import table on ${{ matrix.server }} database
-        run: ssh ${{ secrets.USER }}@$${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
