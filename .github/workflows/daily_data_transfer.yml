@@ -68,9 +68,9 @@ jobs:
       - name: Copy to github workspace
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.TARGET_HOST_${{ matrix.server }} }} 
+          host: ${{ secrets['TARGET_HOST_' + matrix.server] }} 
           username: ${{ secrets.USER }}
-          key: ${{ secrets.TARGET_KEY_${{ matrix.server }} }} 
+          key: ${{ secrets['TARGET_KEY_' + matrix.server] }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
         
@@ -79,9 +79,9 @@ jobs:
       - name: Login to ${{ matrix.server }} server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.TARGET_HOST_${{ matrix.server }} }}
+          host: ${{ secrets['TARGET_HOST_' + matrix.server] }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.TARGET_KEY_${{ matrix.server }} }}
+          key: ${{ secrets['TARGET_KEY_' + matrix.server] }}
           script: |
             mkdir -p ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}
             cp production_db_dump.sql ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
@@ -92,20 +92,20 @@ jobs:
       - name: Copy ${{ matrix.server }} key to runner
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.TARGET_KEY_${{ matrix.server }} }}" > ~/.ssh/id_rsa
+          echo "${{ secrets['TARGET_KEY_' + matrix.server] }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.TARGET_HOST_${{ matrix.server }} }} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets['TARGET_HOST_' + matrix.server] }} >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.TARGET_KEY_${{ matrix.server }} }}
+          SSH_PRIVATE_KEY: ${{ secrets['TARGET_KEY_' + matrix.server] }}
       
       #Drop the existing database on target server
       - name: Drop database if it exists
-        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST_${{ matrix.server }} }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets['TARGET_HOST_' + matrix.server] }}"sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       #Create a database on the target server 
       - name: Create database on ${{ matrix.server }} server
-        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST_${{ matrix.server }} }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets['TARGET_HOST_' + matrix.server] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
       
       #Import the production_db_dump.sql in the database on the target server 
       - name: Import table on ${{ matrix.server }} database
-        run: ssh ${{ secrets.USER }}@${{ secrets.TARGET_HOST_${{ matrix.server }} }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@${{ secrets['TARGET_HOST_' + matrix.server] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
