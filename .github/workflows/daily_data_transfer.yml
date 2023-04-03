@@ -47,9 +47,6 @@ jobs:
           username: ${{ secrets.SOURCE_USER }} 
           key: ${{ secrets.SOURCE_KEY }}
           script : |
-            if [ "${{ matrix.server }}" == "DEVELOPMENT_SERVER" ]; then
-              sleep 120
-            fi
             mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
             cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
