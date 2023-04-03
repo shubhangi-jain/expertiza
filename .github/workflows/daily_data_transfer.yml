@@ -58,19 +58,7 @@ jobs:
         #To access the source details, add the source key to a id_rsa file in .ssh folder
         #Give the user permissions to read and write on the file with chmod 600
         #Use ssh-keyscan to add source key to the known_hosts file
-      - name: Copy Source key to runner
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
 
-      #Use scp to copy the file from the production server to the github workspace
-      - name: Copy file from production server to github workspace
-        run: |
-          scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
 
   data_transfer_target:
     runs-on: ubuntu-latest
@@ -89,6 +77,19 @@ jobs:
             port_num : DEV_PORT
     steps:
         #Use appleboy/scp-action@master to copy the file from github workspace to the target server 
+      - name: Copy Source key to runner
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
+
+      #Use scp to copy the file from the production server to the github workspace
+      - name: Copy file from production server to github workspace
+        run: |
+          scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
       - name: Copy to github workspace
         uses: appleboy/scp-action@master
         with:
