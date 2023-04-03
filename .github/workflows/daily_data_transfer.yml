@@ -18,9 +18,11 @@ jobs:
           - server: TEST_SERVER
             target_key: TEST_SERVER_KEY
             target_host: TEST_SERVER_HOST
+            port_num : TEST_PORT
           - server: DEVELOPMENT_SERVER
             target_key: DEVELOPMENT_SERVER_KEY
             target_host: DEVELOPMENT_SERVER_HOST
+            port_num : DEV_PORT
     steps:
         #Create a VPN to access the production server from your system
       - name: create wireguard tunnel to backup data on a private network
@@ -51,6 +53,7 @@ jobs:
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
             cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "backup copied to ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}">> log_file.txt
+          ssh_options: "-p ${{ secrets[matrix.port_num] }}"
         
         #To access the source details, add the source key to a id_rsa file in .ssh folder
         #Give the user permissions to read and write on the file with chmod 600
