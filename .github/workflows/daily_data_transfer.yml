@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        max-parallel: 1
         server: [TEST_SERVER, DEVELOPMENT_SERVER]
         include:
           - server: TEST_SERVER
