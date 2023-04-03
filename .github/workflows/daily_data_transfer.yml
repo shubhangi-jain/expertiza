@@ -74,6 +74,7 @@ jobs:
 
   data_transfer_target:
     runs-on: ubuntu-latest
+    needs: [data_transfer]
     strategy:
       matrix:
         server: [TEST_SERVER, DEVELOPMENT_SERVER]
