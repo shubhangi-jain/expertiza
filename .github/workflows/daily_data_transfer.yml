@@ -53,7 +53,7 @@ jobs:
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
             cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
             echo "backup copied to ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}">> log_file.txt
-          ssh_options: "-p ${{ secrets[matrix.port_num] }}"
+#           ssh_options: "-p ${{ secrets[matrix.port_num] }}"
         
         #To access the source details, add the source key to a id_rsa file in .ssh folder
         #Give the user permissions to read and write on the file with chmod 600
