@@ -11,18 +11,18 @@ on:
 jobs:
   data_transfer:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        server: [TEST_SERVER, DEVELOPMENT_SERVER]
-        include:
-          - server: TEST_SERVER
-            target_key: TEST_SERVER_KEY
-            target_host: TEST_SERVER_HOST
-            port_num : TEST_PORT
-          - server: DEVELOPMENT_SERVER
-            target_key: DEVELOPMENT_SERVER_KEY
-            target_host: DEVELOPMENT_SERVER_HOST
-            port_num : DEV_PORT
+#     strategy:
+#       matrix:
+#         server: [TEST_SERVER, DEVELOPMENT_SERVER]
+#         include:
+#           - server: TEST_SERVER
+#             target_key: TEST_SERVER_KEY
+#             target_host: TEST_SERVER_HOST
+#             port_num : TEST_PORT
+#           - server: DEVELOPMENT_SERVER
+#             target_key: DEVELOPMENT_SERVER_KEY
+#             target_host: DEVELOPMENT_SERVER_HOST
+#             port_num : DEV_PORT
     steps:
         #Create a VPN to access the production server from your system
       - name: create wireguard tunnel to backup data on a private network
@@ -35,6 +35,7 @@ jobs:
           sudo ip link set wg0 up
           sudo wg set wg0 peer ${{ secrets.WIREGUARD_SERVER_PUBLIC_KEY }} allowed-ips 10.0.0.1/32 endpoint 152.14.92.215:50000
           ping -c 4 10.0.0.1
+          
         #This step uses the actions/checkout@v3 action to check out the code from the repository
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -73,15 +74,39 @@ jobs:
           scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
         #Use appleboy/scp-action@master to copy the file from github workspace to the target server 
-      - name: Copy to github workspace
+      - name: Copy from github workspace to test server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets[matrix.target_host] }}
+          host: ${{ secrets.TEST_SERVER_HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets[matrix.target_key] }}
+          key: ${{ secrets.TEST_SERVER_KEY }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
-        
+          
+      - name: Copy from github workspace to dev server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEVELOPMENT_SERVER_HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.DEVELOPMENT_SERVER_KEY }}
+          source: "production_db_dump.sql"
+          target: "/home/expertiza/"
+          
+  data_transfer_target:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        server: [TEST_SERVER, DEVELOPMENT_SERVER]
+        include:
+          - server: TEST_SERVER
+            target_key: TEST_SERVER_KEY
+            target_host: TEST_SERVER_HOST
+            port_num : TEST_PORT
+          - server: DEVELOPMENT_SERVER
+            target_key: DEVELOPMENT_SERVER_KEY
+            target_host: DEVELOPMENT_SERVER_HOST
+            port_num : DEV_PORT
+    steps:      
         #This step uses appleboy/ssh-action@master to login to the target server 
         #Run cp command to take backup of the production_db_dump.sql in the backup location
       - name: Login to ${{ matrix.server }} server
