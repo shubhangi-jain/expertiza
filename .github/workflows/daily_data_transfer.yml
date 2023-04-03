@@ -11,18 +11,18 @@ on:
 jobs:
   data_transfer:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        server: [TEST_SERVER, DEVELOPMENT_SERVER]
-        include:
-          - server: TEST_SERVER
-            target_key: TEST_SERVER_KEY
-            target_host: TEST_SERVER_HOST
-            port_num : TEST_PORT
-          - server: DEVELOPMENT_SERVER
-            target_key: DEVELOPMENT_SERVER_KEY
-            target_host: DEVELOPMENT_SERVER_HOST
-            port_num : DEV_PORT
+#     strategy:
+#       matrix:
+#         server: [TEST_SERVER, DEVELOPMENT_SERVER]
+#         include:
+#           - server: TEST_SERVER
+#             target_key: TEST_SERVER_KEY
+#             target_host: TEST_SERVER_HOST
+#             port_num : TEST_PORT
+#           - server: DEVELOPMENT_SERVER
+#             target_key: DEVELOPMENT_SERVER_KEY
+#             target_host: DEVELOPMENT_SERVER_HOST
+#             port_num : DEV_PORT
     steps:
         #Create a VPN to access the production server from your system
       - name: create wireguard tunnel to backup data on a private network
@@ -71,7 +71,22 @@ jobs:
       - name: Copy file from production server to github workspace
         run: |
           scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
-        
+
+  data_transfer_target:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        server: [TEST_SERVER, DEVELOPMENT_SERVER]
+        include:
+          - server: TEST_SERVER
+            target_key: TEST_SERVER_KEY
+            target_host: TEST_SERVER_HOST
+            port_num : TEST_PORT
+          - server: DEVELOPMENT_SERVER
+            target_key: DEVELOPMENT_SERVER_KEY
+            target_host: DEVELOPMENT_SERVER_HOST
+            port_num : DEV_PORT
+    steps:
         #Use appleboy/scp-action@master to copy the file from github workspace to the target server 
       - name: Copy to github workspace
         uses: appleboy/scp-action@master
