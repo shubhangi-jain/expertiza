@@ -73,7 +73,7 @@ jobs:
         run: |
           scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
-#         Use appleboy/scp-action@master to copy the file from github workspace to the target server 
+#      Use appleboy/scp-action@master to copy the file from github workspace to the target server 
       - name: Copy from github workspace to test server
         uses: appleboy/scp-action@master
         with:
