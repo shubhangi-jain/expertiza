@@ -26,7 +26,7 @@ jobs:
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: setup/setup_playbook.yml
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          inventory: node ansible_host=${{ secrets.SSH_HOST }} ansible_user=${{ secrets.SSH_USER }}
+          playbook: setup/setup_playbook_ubuntu.yml
+          key: ${{ secrets.TARGET_KEY }}
+          inventory: node ansible_host=${{ secrets.TARGET_HOST }} ansible_user=${{ secrets.SOURCE_USER }}
           options: --verbose
