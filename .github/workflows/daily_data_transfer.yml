@@ -37,7 +37,7 @@ jobs:
       - name: Create dump on production server
         uses: appleboy/ssh-action@master
         with:
-          host: 10.0.0.1
+          host: ${{ secrets.SOURCE_HOST }}
           username: ${{ secrets.USER }} 
           key: ${{ secrets.SOURCE_KEY }}
           script : |
@@ -52,16 +52,16 @@ jobs:
       - name: Copy Source key to runner
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
+          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
 
       #Use scp to copy the file from the production server to the github workspace
       - name: Copy file from production server to github workspace
         run: |
-          scp -r -i ~/.ssh/id_rsa ${{ secrets.USER }}@10.0.0.1:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
+          scp -r -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
 #      Use appleboy/scp-action@master to copy the file from github workspace to the target server 
       - name: Copy from github workspace to test server
