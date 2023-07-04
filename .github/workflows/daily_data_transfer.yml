@@ -34,7 +34,7 @@ jobs:
       - name: Create dump on production server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SOURCE_HOST }} 
+          host: 10.0.0.1
           username: ${{ secrets.USER }} 
           key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
           script : |
