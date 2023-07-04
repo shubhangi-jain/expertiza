@@ -39,7 +39,7 @@ jobs:
         with:
           host: 10.0.0.1
           username: ${{ secrets.USER }} 
-          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
+          key: ${{ secrets.SOURCE_KEY }}
           script : |
             mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
