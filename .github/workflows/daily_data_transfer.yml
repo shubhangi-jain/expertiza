@@ -28,6 +28,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
+      - name: Check prod
+        run: echo "This is the key ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}"
+        
         #This step uses appleboy/ssh-action@master to login to the source server 
         #A sql dump of all the tables is created on the source server and stored in production_db_dump.sql
         #A copy of the production_db_dump.sql file is created and stored in the backup location
