@@ -35,8 +35,8 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SOURCE_HOST }} 
-          username: ${{ secrets.SOURCE_USER }} 
-          key: ${{ secrets.SOURCE_KEY }}
+          username: ${{ secrets.USER }} 
+          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
           script : |
             mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
             mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
@@ -49,16 +49,16 @@ jobs:
       - name: Copy Source key to runner
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SOURCE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SOURCE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
 
       #Use scp to copy the file from the production server to the github workspace
       - name: Copy file from production server to github workspace
         run: |
-          scp -r -i ~/.ssh/id_rsa ${{ secrets.SOURCE_USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
+          scp -r -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
 #      Use appleboy/scp-action@master to copy the file from github workspace to the target server 
       - name: Copy from github workspace to test server
@@ -66,7 +66,7 @@ jobs:
         with:
           host: ${{ secrets.TEST_SERVER_HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.TEST_SERVER_KEY }}
+          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_STAGING }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
           
@@ -75,7 +75,7 @@ jobs:
         with:
           host: ${{ secrets.DEVELOPMENT_SERVER_HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.DEVELOPMENT_SERVER_KEY }}
+          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_DEV }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
           
@@ -87,11 +87,11 @@ jobs:
         server: [TEST_SERVER, DEVELOPMENT_SERVER]
         include:
           - server: TEST_SERVER
-            target_key: TEST_SERVER_KEY
+            target_key: ENCRYPTED_PRIVATE_KEY_STAGING
             target_host: TEST_SERVER_HOST
             port_num : TEST_PORT
           - server: DEVELOPMENT_SERVER
-            target_key: DEVELOPMENT_SERVER_KEY
+            target_key: ENCRYPTED_PRIVATE_KEY_DEV
             target_host: DEVELOPMENT_SERVER_HOST
             port_num : DEV_PORT
     steps:      
