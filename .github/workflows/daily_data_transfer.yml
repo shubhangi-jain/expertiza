@@ -38,10 +38,10 @@ jobs:
           username: ${{ secrets.USER }} 
           key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
           script : |
-            mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.SYNC_MYSQL_SOURCE_DB }} > production_db_dump.sql
-            mkdir -p ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}
-            cp production_db_dump.sql ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
-            echo "backup copied to ${{ secrets.SYNC_SOURCE_BACKUP_LOCATION }}">> log_file.txt
+            mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.MYSQL_DB }} > production_db_dump.sql
+            mkdir -p ${{ secrets.BACKUP_LOCATION }}
+            cp production_db_dump.sql ${{ secrets.BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
+            echo "backup copied to ${{ secrets.BACKUP_LOCATION }}">> log_file.txt
         
         #To access the source details, add the source key to a id_rsa file in .ssh folder
         #Give the user permissions to read and write on the file with chmod 600
@@ -104,8 +104,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets[matrix.target_key] }}
           script: |
-            mkdir -p ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}
-            cp production_db_dump.sql ${{ secrets.SYNC_DESTINATION_BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
+            mkdir -p ${{ secrets.BACKUP_LOCATION }}
+            cp production_db_dump.sql ${{ secrets.BACKUP_LOCATION }}/production_db_dump_$(date -d "today" +"%Y%m%d%H%M").sql
         
         #To access the target details, add the target key to a id_rsa file in .ssh folder
         #Give the user permissions to read and write on the file with chmod 600
@@ -121,12 +121,12 @@ jobs:
       
       #Drop the existing database on target server
       - name: Drop database if it exists
-        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'DROP DATABASE IF EXISTS ${{ secrets.MYSQL_DB }}'"
       
       #Create a database on the target server 
       - name: Create database on ${{ matrix.server }} server
-        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.SYNC_MYSQL_DESTINATION_DB }}'"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' -e 'CREATE DATABASE ${{ secrets.MYSQL_DB }}'"
       
       #Import the production_db_dump.sql in the database on the target server 
       - name: Import table on ${{ matrix.server }} database
-        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.SYNC_MYSQL_DESTINATION_DB }} < /home/expertiza/production_db_dump.sql"
+        run: ssh ${{ secrets.USER }}@${{ secrets[matrix.target_host] }} "sudo mysql -u root -p'${{ secrets.MYSQL_ROOT_PASSWORD }}' ${{ secrets.MYSQL_DB }} < /home/expertiza/production_db_dump.sql"
