@@ -34,9 +34,9 @@ jobs:
       - name: Create dump on production server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SOURCE_HOST }}
+          host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.USER }} 
-          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
+          key: ${{ secrets.PROD_KEY }}
           script : |
             mysqldump -u root -p"${{ secrets.MYSQL_ROOT_PASSWORD }}" ${{ secrets.MYSQL_DB }} > production_db_dump.sql
             mkdir -p ${{ secrets.BACKUP_LOCATION }}
@@ -49,33 +49,33 @@ jobs:
       - name: Copy Source key to runner
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.PROD_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.SOURCE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.ENCRYPTED_PRIVATE_KEY_PROD }}
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_KEY }}
 
       #Use scp to copy the file from the production server to the github workspace
       - name: Copy file from production server to github workspace
         run: |
-          scp -r -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.SOURCE_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
+          scp -r -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.PROD_HOST }}:/home/expertiza/production_db_dump.sql $GITHUB_WORKSPACE
         
 #      Use appleboy/scp-action@master to copy the file from github workspace to the target server 
       - name: Copy from github workspace to test server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.TEST_SERVER_HOST }}
+          host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_STAGING }}
+          key: ${{ secrets.STAGING_KEY }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
           
       - name: Copy from github workspace to dev server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEVELOPMENT_SERVER_HOST }}
+          host: ${{ secrets.DEV_HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.ENCRYPTED_PRIVATE_KEY_DEV }}
+          key: ${{ secrets.DEV_KEY }}
           source: "production_db_dump.sql"
           target: "/home/expertiza/"
           
@@ -87,12 +87,12 @@ jobs:
         server: [TEST_SERVER, DEVELOPMENT_SERVER]
         include:
           - server: TEST_SERVER
-            target_key: ENCRYPTED_PRIVATE_KEY_STAGING
-            target_host: TEST_SERVER_HOST
-            port_num : TEST_PORT
+            target_key: STAGING_KEY
+            target_host: STAGING_HOST
+            port_num : STAGING_PORT
           - server: DEVELOPMENT_SERVER
-            target_key: ENCRYPTED_PRIVATE_KEY_DEV
-            target_host: DEVELOPMENT_SERVER_HOST
+            target_key: DEV_KEY
+            target_host: DEV_HOST
             port_num : DEV_PORT
     steps:      
         #This step uses appleboy/ssh-action@master to login to the target server 
